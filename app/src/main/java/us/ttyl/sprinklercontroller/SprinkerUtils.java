@@ -1,5 +1,7 @@
 package us.ttyl.sprinklercontroller;
 
+import android.util.Log;
+
 /**
  * Created by test on 12/18/2016.
  */

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,11 +50,11 @@ public class SprinkleTimeAdapter extends RecyclerView.Adapter<SprinkleTimeAdapte
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, UpdateTimeActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("day", SprinkerUtils.getDayOfWeekNumber(time.day));
                 bundle.putLong("id", time.id);
                 bundle.putString("zone", time.zone);
                 bundle.putString("start", time.start);
                 bundle.putString("end", time.end);
+                bundle.putString("day", holder.day.getText().toString());
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
             }

@@ -34,7 +34,7 @@ public class UpdateTimeActivity extends AppCompatActivity {
     public static final String TAG = "AddTimeActivity";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getIntent().getExtras();
         final long id = bundle.getLong("id");
@@ -105,8 +105,7 @@ public class UpdateTimeActivity extends AppCompatActivity {
         daysAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDay.setAdapter(daysAdapter);
         for(int i = 0; i < daysAdapter.getCount(); i ++ ){
-            String dayName = SprinkerUtils.getDayFullNameFromDayNumber(day);
-            if (daysAdapter.getItem(i).equals(dayName)){
+            if (daysAdapter.getItem(i).equals(day)){
                 mDay.setSelection(i);
             }
         }
