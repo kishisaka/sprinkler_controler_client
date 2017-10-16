@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp"/>
+        android:layout_marginBottom="10dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/time_list"
