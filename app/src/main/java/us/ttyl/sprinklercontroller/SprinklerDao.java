@@ -21,6 +21,11 @@ public class SprinklerDao {
     String ip = "192.168.10.118";
     String port = "8081";
 
+    private SprinklerService service =  new Retrofit.Builder()
+            .baseUrl("http://"+ip+":" + port)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(SprinklerService.class);
+
     private SprinklerDao() {
     }
 
@@ -32,41 +37,18 @@ public class SprinklerDao {
     }
 
     public SprinklerData getSprinklerData() throws IOException{
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":" + port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-
-        SprinklerService service = retrofit.create(SprinklerService.class);
-
         Call<SprinklerData> call = service.getSprinklerTimes();
         Response<SprinklerData> data = call.execute();
         return data.body();
     }
 
     public SprinklerData updateSprinkerItem(long id, String day, String start, String end, String zone) throws IOException{
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":" + port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-
-        SprinklerService service = retrofit.create(SprinklerService.class);
-
         Call<SprinklerData> call = service.updateSprinkerItem(id, day, start, end, zone);
         Response<SprinklerData> data = call.execute();
         return data.body();
     }
 
     public SprinklerData addSprinklerItem(String day, String start, String end, String zone) throws IOException{
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":" + port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-
-        SprinklerService service = retrofit.create(SprinklerService.class);
         Log.i(TAG, day + "|" + start + "|" + end + "|" + zone);
         Call<SprinklerData> call = service.addSprinklerItem(day, start, end, zone);
         Response<SprinklerData> data = call.execute();
@@ -74,28 +56,20 @@ public class SprinklerDao {
     }
 
     public SprinklerData removeItem(long id) throws IOException {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":" + port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-
-        SprinklerService service = retrofit.create(SprinklerService.class);
-
         Call<SprinklerData> call = service.addSprinklerItem(id);
         Response<SprinklerData> data = call.execute();
         return data.body();
     }
 
     public CurrentTime getCurrentTime() throws IOException {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://"+ip+":" + port)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        SprinklerService service = retrofit.create(SprinklerService.class);
-
         Call<CurrentTime> call = service.getCurrentTime();
         Response<CurrentTime> data = call.execute();
+        return data.body();
+    }
+
+    public SprinklerStatus getCurrentStatus() throws IOException {
+        Call<SprinklerStatus> call = service.getSprinklerStatus();
+        Response<SprinklerStatus> data = call.execute();
         return data.body();
     }
 }

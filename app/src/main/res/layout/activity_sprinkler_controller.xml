@@ -51,8 +51,17 @@
         tools:text="40f"
         android:layout_margin="10dp"
         android:layout_toRightOf="@id/weather_condition" />
+    <TextView
+        android:id="@+id/sprinkler_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="gasdgdsagsdgsd"
+        android:layout_margin="10dp"
+        android:layout_above="@+id/clockImage"
+        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/weather_condition" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_time"
         app:fabSize="normal"
         android:src="@drawable/plus_circle"
@@ -62,7 +71,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/time_list"
         android:layout_width="match_parent"
         android:layout_height="500dp"

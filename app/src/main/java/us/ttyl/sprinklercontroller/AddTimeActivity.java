@@ -3,23 +3,24 @@ package us.ttyl.sprinklercontroller;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,7 +30,13 @@ public class AddTimeActivity extends AppCompatActivity {
     ImageButton mStartTimeBtn;
     ImageButton mEndTimeBtn;
     Spinner mZone;
-    Spinner mDay;
+    CheckBox mSundaySelect;
+    CheckBox mMondaySelect;
+    CheckBox mTuesdaySelect;
+    CheckBox mWednesdaySelect;
+    CheckBox mThursdaySelect;
+    CheckBox mFridaySelect;
+    CheckBox mSaturdaySelect;
     ImageButton addBtn;
 
     ExecutorService mPool = Executors.newFixedThreadPool(1);
@@ -62,7 +69,13 @@ public class AddTimeActivity extends AppCompatActivity {
             }
         });
 
-        mDay = (Spinner) findViewById(R.id.add_day);
+        mSundaySelect = (CheckBox) findViewById(R.id.sunday_select);
+        mMondaySelect = (CheckBox) findViewById(R.id.monday_select);
+        mTuesdaySelect = (CheckBox) findViewById(R.id.tuesday_select);
+        mWednesdaySelect = (CheckBox) findViewById(R.id.wednesday_select);
+        mThursdaySelect= (CheckBox) findViewById(R.id.thursday_select);
+        mFridaySelect = (CheckBox) findViewById(R.id.friday_select);
+        mSaturdaySelect = (CheckBox) findViewById(R.id.saturday_select);
         mZone = (Spinner) findViewById(R.id.add_zone);
         addBtn = (ImageButton)findViewById(R.id.add_btn);
 
@@ -72,36 +85,62 @@ public class AddTimeActivity extends AppCompatActivity {
                 mPool.execute(new Runnable() {
                     @Override
                     public void run() {
+                        List<String> selectedDays = getSelectedDays();
                         try {
-                            SprinklerDao.getInstance().addSprinklerItem(
-                                    SprinkerUtils.getDayOfWeekNumber((String) mDay.getSelectedItem()),
-                                    mStartTimeText.getText().toString(),
-                                    mEndTimeText.getText().toString(),
-                                    (String) mZone.getSelectedItem());
-                            AddTimeActivity.this.runOnUiThread(new Runnable(){
+                            for(int index = 0; index < selectedDays.size(); index ++) {
+                                SprinklerDao.getInstance().addSprinklerItem(
+                                       selectedDays.get(index),
+                                        mStartTimeText.getText().toString(),
+                                        mEndTimeText.getText().toString(),
+                                        (String) mZone.getSelectedItem());
+                            }
+                        }
+                        catch(IOException e) {
+                            Log.e(TAG, "add failed", e);
+                        }
+                        finally {
+                            AddTimeActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     AddTimeActivity.this.finish();
                                 }
                             });
                         }
-                        catch(IOException e) {
-                            Log.e(TAG, "add failed", e);
-                        }
                     }
                 });
             }
         });
 
-        ArrayAdapter<CharSequence> daysAdapter = ArrayAdapter.createFromResource(this,
-                R.array.days_array, android.R.layout.simple_spinner_item);
-        daysAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDay.setAdapter(daysAdapter);
-
         ArrayAdapter<CharSequence> zoneAdapter = ArrayAdapter.createFromResource(this,
                 R.array.zone_array, android.R.layout.simple_spinner_item);
         zoneAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mZone.setAdapter(zoneAdapter);
+    }
+
+    public List<String> getSelectedDays() {
+        List<String> selectedDays = new ArrayList();
+        if (mSundaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mSundaySelect.getText().toString()));
+        }
+        if (mMondaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mMondaySelect.getText().toString()));
+        }
+        if (mTuesdaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mTuesdaySelect.getText().toString()));
+        }
+        if (mWednesdaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mWednesdaySelect.getText().toString()));
+        }
+        if (mThursdaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mThursdaySelect.getText().toString()));
+        }
+        if (mFridaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mFridaySelect.getText().toString()));
+        }
+        if (mSaturdaySelect.isChecked()) {
+            selectedDays.add(SprinkerUtils.getDayOfWeekNumber(mSaturdaySelect.getText().toString()));
+        }
+        return selectedDays;
     }
 
     public static class TimePickerFragment extends DialogFragment

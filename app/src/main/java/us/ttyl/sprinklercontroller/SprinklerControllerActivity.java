@@ -1,15 +1,16 @@
 package us.ttyl.sprinklercontroller;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,12 +29,13 @@ public class SprinklerControllerActivity extends AppCompatActivity {
     TextView mWeatherCondtion;
     TextView mWeatherTemp;
     TextView mTime;
+    TextView mSprinklerStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sprinkler_controller);
-
+        mSprinklerStatus = (TextView)findViewById(R.id.sprinkler_status);
         mWeatherCondtion = (TextView)findViewById(R.id.weather_condition);
         mWeatherTemp = (TextView)findViewById(R.id.weather_temperature);
         mTime = (TextView)findViewById(R.id.time);
@@ -41,7 +43,7 @@ public class SprinklerControllerActivity extends AppCompatActivity {
         mTimeList = (RecyclerView)findViewById(R.id.time_list);
         mTimeList.setLayoutManager(new LinearLayoutManager(this));
         setupItemTouchHelper();
-        mAddButton = (FloatingActionButton)findViewById(R.id.add_time);
+        mAddButton = (FloatingActionButton) findViewById(R.id.add_time);
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,11 +78,14 @@ public class SprinklerControllerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         mPool.execute(new Runnable() {
             @Override
             public void run() {
                 SprinklerDao sprinklerDao = SprinklerDao.getInstance();
                 try {
+                    final SprinklerStatus status = sprinklerDao.getCurrentStatus();
+
                     SprinklerData data = sprinklerDao.getSprinklerData();
                     Log.i(TAG, data.getTimezone()+ "\n" + data.getWeatherundergroundAPIKey()
                             + "\n" + data.getZipcode() + "\n");
@@ -89,6 +94,9 @@ public class SprinklerControllerActivity extends AppCompatActivity {
                     SprinklerControllerActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mSprinklerStatus.setText("1:" + status.getStatus(status.status1) + " 2:" + status.getStatus(status.status2) + " 3:"
+                                    + status.getStatus(status.status3) + " 4:" + status.getStatus(status.status4) + " 5:" + status.getStatus(status.status5)
+                                    + " 6:" + status.getStatus(status.status6) + " 7:" + status.getStatus(status.status7) + " 8:" + status.getStatus(status.status8));
                             mWeatherTemp.setText(currentTime.getWeather_temp());
                             mWeatherCondtion.setText(currentTime.getWeather_condition());
                             mTime.setText(currentTime.getTime());
