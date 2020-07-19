@@ -3,8 +3,6 @@ package us.ttyl.sprinklercontroller;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -14,12 +12,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.io.IOException;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+
 import java.text.DecimalFormat;
 import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
+import java.util.concurrent.Callable;
 public class UpdateTimeActivity extends AppCompatActivity {
     TextView mStartTimeText;
     TextView mEndTimeText;
@@ -29,7 +33,7 @@ public class UpdateTimeActivity extends AppCompatActivity {
     Spinner mDay;
     ImageButton addBtn;
 
-    ExecutorService mPool = Executors.newFixedThreadPool(1);
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public static final String TAG = "AddTimeActivity";
 
@@ -43,7 +47,7 @@ public class UpdateTimeActivity extends AppCompatActivity {
         final String end = bundle.getString("end");
         final String day = bundle.getString("day");
 
-        setContentView(R.layout.activity_add_new_time);
+        setContentView(R.layout.activity_update_time);
         mStartTimeText = (TextView)findViewById(R.id.start_time_text);
         mStartTimeText.setText(start);
         mStartTimeBtn = (ImageButton)findViewById(R.id.start_time_btn);
@@ -75,28 +79,22 @@ public class UpdateTimeActivity extends AppCompatActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, (String)mZone.getSelectedItem());
-                mPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            SprinklerDao.getInstance().updateSprinkerItem(id,
-                                    SprinkerUtils.getDayOfWeekNumber((String) mDay.getSelectedItem()),
-                                    mStartTimeText.getText().toString(),
-                                    mEndTimeText.getText().toString(),
-                                    (String)mZone.getSelectedItem());
-                            UpdateTimeActivity.this.runOnUiThread(new Runnable(){
-                                @Override
-                                public void run() {
-                                    UpdateTimeActivity.this.finish();
-                                }
-                            });
-                        }
-                        catch(IOException e) {
-                            Log.e(TAG, "add failed", e);
-                        }
-                    }
-                });
+                disposables.add(updateSprrinklerItemObservalble(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableObserver<String>() {
+                            @Override public void onComplete() {
+                                UpdateTimeActivity.this.finish();
+                            }
+
+                            @Override public void onError(Throwable e) {
+                                Log.e(TAG, "onError()", e);
+                            }
+
+                            @Override public void onNext(String string) {
+                                Log.d(TAG, "onNext(" + string + ")");
+                            }
+                        }));
             }
         });
 
@@ -121,6 +119,20 @@ public class UpdateTimeActivity extends AppCompatActivity {
         }
     }
 
+    private Observable<String> updateSprrinklerItemObservalble(final long id) {
+        return Observable.defer(new Callable<ObservableSource<? extends String>>() {
+            @Override
+            public ObservableSource<? extends String> call() throws Exception {
+                SprinklerDao.getInstance().updateSprinkerItem(id,
+                        SprinkerUtils.getDayOfWeekNumber((String) mDay.getSelectedItem()),
+                        mStartTimeText.getText().toString(),
+                        mEndTimeText.getText().toString(),
+                        (String)mZone.getSelectedItem());
+                return Observable.just("done");
+            }
+        });
+    }
+
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
@@ -138,8 +150,8 @@ public class UpdateTimeActivity extends AppCompatActivity {
             int minute = c.get(Calendar.MINUTE);
 
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
-                    DateFormat.is24HourFormat(getActivity()));
+            return new TimePickerDialog(this.getContext(), this, hour, minute,
+                    DateFormat.is24HourFormat(this.getContext()));
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

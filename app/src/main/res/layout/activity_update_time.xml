@@ -69,59 +69,22 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="day: "
             android:layout_alignParentLeft="true"
             android:layout_margin="10dp"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/sunday_select"
-            android:text="Sun"
-            android:layout_marginStart="20dp"
+        <Spinner
+            android:id="@+id/add_day"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/monday_select"
-            android:text="Mon"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/tuesday_select"
-            android:text="Tue"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/wednesday_select"
-            android:text="Wed"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/thursday_select"
-            android:text="Thr"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/friday_select"
-            android:text="Fri"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/saturday_select"
-            android:text="Sat"
-            android:layout_marginStart="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"  />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

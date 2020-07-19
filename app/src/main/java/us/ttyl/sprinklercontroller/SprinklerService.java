@@ -37,4 +37,7 @@ public interface SprinklerService {
     @GET("removeitem/{id}")
     Call<SprinklerData> addSprinklerItem(@Path("id") long id);
 
+    @GET("status/")
+    Call<SprinklerStatus> getSprinklerStatus();
+
 }
